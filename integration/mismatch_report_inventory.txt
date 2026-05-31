@@ -1,0 +1,98 @@
+MEDICINE & BATCH INTEGRATION MISMATCH REPORT
+============================================
+
+This file documents the full mismatch analysis between:
+
+- frontend/src/pages/InventoryPage.tsx
+- backend CreateMedicineDto, Medicine entity
+- backend CreateBatchDto, Batch entity
+- backend medicines.service.ts
+- backend batches.service.ts
+
+It enables the next step: preparing precise integration fixes.
+
+------------------------------------------------------------
+1. MEDICINE PAYLOAD MISMATCHES
+------------------------------------------------------------
+
+Frontend sends the following payload when creating/updating medicines:
+
+{
+  name,
+  generic_name,
+  category,
+  unit,
+  barcode,
+  reorder_level,
+  description
+}
+
+Backend CreateMedicineDto expects:
+
+- name: required
+- generic_name?: optional
+- category?: optional
+- unit?: optional
+- barcode?: optional
+- reorder_level?: optional
+- description?: optional
+- tenant_id?: optional BUT service logic requires tenant scoping
+
+Mismatch A — tenant_id missing in frontend payload  
+Impact: Backend depends on TenantGuard to inject tenantId. If not injected properly, creation fails.
+
+Mismatch B — reorder_level fallback logic  
+Frontend uses med.reorder_level || 10, which treats zero as falsy and overwrites it.
+
+Mismatch C — Filters unsupported in backend  
+Frontend calls: /medicines?search=&category=&limit=100  
+Backend supports search & category, but does pagination differently, ignores limit=100 via custom logic.
+
+Mismatch D — Medicines require batches relation  
+Frontend uses med.batches to compute totalStock.  
+Backend findAll correctly includes relations: { batches: true } so this is OK.
+
+------------------------------------------------------------
+2. BATCH PAYLOAD MISMATCHES
+------------------------------------------------------------
+
+Frontend payload:
+
+{
+  medicine_id,
+  supplier_id,
+  batch_number,
+  quantity,
+  cost_price,
+  sell_price,
+  expiry_date: ISO string,
+  manufacture_date: ISO string | undefined
+}
+
+Backend CreateBatchDto fields match exactly except:
+
+Mismatch E — tenant_id missing in payload  
+Backend expects tenantId injected by guard or passed from controller.
+
+------------------------------------------------------------
+3. RELATIONSHIP & BEHAVIOR MISMATCHES
+------------------------------------------------------------
+
+Mismatch F — Medicine deletion expects cascade batch delete  
+Frontend warns that deleting a medicine will delete all its batches.  
+Backend uses softDelete on medicines WITHOUT cascading to batches.
+
+Mismatch G — No frontend fallback if backend returns meta pagination  
+Frontend expects medsRes.data as array. Backend returns { data, meta }. This is correct and compatible.
+
+------------------------------------------------------------
+4. SUMMARY OF REQUIRED FIXES
+------------------------------------------------------------
+
+- Ensure tenantId is passed correctly to service in both medicines and batches endpoints.
+- Fix reorder_level zero-handling on frontend.
+- Confirm backend is receiving filters exactly as frontend sends them.
+- Add cascade or soft-delete propagation for related batches if desired.
+- Validate that manufacture_date and expiry_date parsing works.
+
+This report completes the mismatch identification step and enables the next phase: implementing integration fixes.

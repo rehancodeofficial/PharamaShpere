@@ -1,0 +1,83 @@
+INVENTORY MODULE INTEGRATION FIX PLAN
+=====================================
+
+This file lists the exact backend and frontend changes required to fully integrate the Inventory module based on the mismatch report.
+
+------------------------------------------------------------
+1. BACKEND FIXES (MEDICINES)
+------------------------------------------------------------
+
+A. Ensure pagination accepts `limit=100` correctly  
+   - Modify medicines.controller.ts to allow large limit values from query.
+   - Modify medicines.service.ts to use provided limit explicitly.
+
+B. Fix search + category combined behavior  
+   - Current logic ignores category when search is active.
+   - Need to apply BOTH filters via a query builder.
+
+C. Ensure reorder_level uses default only when undefined  
+   - Validate reorder_level at DTO level or default before saving.
+
+D. Confirm batches relation is included everywhere  
+   - findAll() already includes relations: { batches: true }  
+   - findLowStock uses explicit joins (OK).
+
+E. Ensure tenant scoping works consistently  
+   - TenantGuard must populate tenantId correctly.
+
+F. Confirm softDelete of medicines should cascade / restrict  
+   - If frontend expects "deleting medicine deletes all batches", enable cascade soft delete  
+   OR  
+   - Adjust frontend message to reflect behavior.
+
+------------------------------------------------------------
+2. BACKEND FIXES (BATCHES)
+------------------------------------------------------------
+
+A. tenant_id must be injected consistently  
+   - Ensure batches.controller passes tenantId to batches.service.create.
+
+B. Validate expiry_date and manufacture_date types  
+   - Ensure date parsing in CreateBatchDto matches entity expectations.
+
+------------------------------------------------------------
+3. FRONTEND FIXES (InventoryPage.tsx)
+------------------------------------------------------------
+
+A. Replace `med.reorder_level || 10` with explicit null checks  
+   - Use: med.reorder_level ?? 10  
+   - Ensures zero is respected.
+
+B. Filters must match backend  
+   - category and search queries need to match backend controller parameter names exactly.
+
+C. Pagination support (optional)  
+   - Add meta handling if necessary: medsRes.meta.
+
+D. Ensure correct payload for medicine create/update  
+   - tenant_id is NOT required because backend injects it via CurrentTenant decorator.
+
+E. Ensure correct payload for batch create  
+   - Frontend batch payload already matches backend DTO.
+
+------------------------------------------------------------
+4. IMPLEMENTATION STEPS (ORDER OF EXECUTION)
+------------------------------------------------------------
+
+1. Update backend medicines.service.ts to support combined filters.  
+2. Update backend medicines.controller.ts to pass limit correctly.  
+3. Update reorder_level handling in frontend InventoryPage.tsx.  
+4. Fix UI to respect real pagination (optional).  
+5. Verify tenant injection works during medicine and batch creation.  
+6. Decide cascade behavior for medicine deletion and implement accordingly.  
+7. Test end‑to‑end with real API:  
+   - Create medicine  
+   - Edit medicine  
+   - Delete medicine  
+   - Create batch  
+   - Inventory totals update  
+   - Stock statuses (Low / Out‑of‑Stock)
+
+------------------------------------------------------------
+This plan completes the “prepare precise integration fixes” stage.
+Next stage is “Implement code changes”.
