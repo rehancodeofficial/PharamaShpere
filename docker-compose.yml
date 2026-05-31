@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: pharmasphere-db
+    restart: always
+    environment:
+      POSTGRES_USER: pharma_admin
+      POSTGRES_PASSWORD: SuperSecretPassword123!
+      POSTGRES_DB: pharmasphere_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: pharmasphere-backend
+    restart: always
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: pharma_admin
+      DB_PASSWORD: SuperSecretPassword123!
+      DB_NAME: pharmasphere_dev
+      OFFLINE_MODE: "true"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: pharmasphere-frontend
+    restart: always
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

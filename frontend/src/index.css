@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Primary Blues */
+    --blue-950: #0A1628;
+    --blue-900: #0F2040;
+    --blue-800: #1A3A5C;
+    --blue-700: #1E4D7B;
+    --blue-600: #1D6FA4;
+    --blue-500: #2B8AC6;
+    --blue-100: #DBEAFE;
+    --blue-50: #EFF6FF;
+
+    /* Accent Greens */
+    --green-600: #059669;
+    --green-500: #10B981;
+    --green-400: #34D399;
+    --green-100: #D1FAE5;
+    --green-50: #ECFDF5;
+
+    /* Neutrals */
+    --gray-950: #0C0F14;
+    --gray-900: #111827;
+    --gray-800: #1F2937;
+    --gray-700: #374151;
+    --gray-600: #4B5563;
+    --gray-400: #9CA3AF;
+    --gray-300: #D1D5DB;
+    --gray-200: #E5E7EB;
+    --gray-100: #F3F4F6;
+    --gray-50: #F9FAFB;
+    --white: #FFFFFF;
+
+    /* Semantic */
+    --danger: #EF4444;
+    --warning: #F59E0B;
+    --info: #3B82F6;
+  }
+
+  body {
+    @apply font-body text-gray-900 bg-gray-50 antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading text-brand-950;
+  }
+}
