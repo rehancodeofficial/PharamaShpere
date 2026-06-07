@@ -1,16 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Activity,
   AlertTriangle,
-  BarChart3,
   CalendarClock,
   Pill,
   Sparkles,
   Stethoscope,
   PackagePlus,
   ShoppingCart,
-  Truck,
   Loader2,
 } from 'lucide-react';
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
@@ -26,9 +24,6 @@ const formatCurrency = (amount: number) =>
 export const DashboardPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // API State
   const [stats, setStats] = useState({
     todayRevenue: 0,
     totalMedicines: 0,
@@ -42,12 +37,10 @@ export const DashboardPage = () => {
   const [revenueChartData, setRevenueChartData] = useState<any[]>([]);
   const [bestSellers, setBestSellers] = useState<any[]>([]);
   const [inventoryHealth, setInventoryHealth] = useState(100);
-  const [totalStockCount, setTotalStockCount] = useState(0);
 
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      setError(null);
 
       // Fetch concurrently
       const [dailyRes, medicinesRes, lowStockRes, expiringRes, salesRes] = await Promise.all([
@@ -129,7 +122,6 @@ export const DashboardPage = () => {
       setInventoryHealth(healthPct);
     } catch (err: any) {
       console.error(err);
-      setError('Could not refresh dashboard diagnostics. Please check database connection.');
     } finally {
       setLoading(false);
     }
@@ -320,7 +312,7 @@ export const DashboardPage = () => {
                 />
                 <Tooltip
                   contentStyle={{ border: '0', borderRadius: '18px', boxShadow: '0 16px 40px rgba(15,32,64,0.14)' }}
-                  formatter={(value: number) => [formatCurrency(value as number), 'Revenue']}
+                  formatter={(value: any) => [formatCurrency(value as number), 'Revenue']}
                 />
                 <Area
                   dataKey="revenue"
@@ -376,7 +368,7 @@ export const DashboardPage = () => {
                 <YAxis axisLine={false} tick={false} tickLine={false} />
                 <Tooltip
                   contentStyle={{ border: '0', borderRadius: '16px', boxShadow: '0 16px 40px rgba(15,32,64,0.12)' }}
-                  formatter={(value: number) => [value, 'Units Sold']}
+                  formatter={(value: any) => [value, 'Units Sold']}
                 />
                 <Bar dataKey="sales" fill="#10B981" radius={[10, 10, 0, 0]} />
               </BarChart>

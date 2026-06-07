@@ -9,7 +9,7 @@ import {
   X,
   AlertTriangle,
   Calendar,
-  CheckCircle,
+  
 } from 'lucide-react';
 import { apiFetch } from '../lib/api';
 

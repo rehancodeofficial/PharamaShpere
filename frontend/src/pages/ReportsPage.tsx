@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import {
   TrendingUp, DollarSign, ShoppingBag, Package, BarChart2, Loader2, AlertCircle,
-  Calendar, Download, RefreshCw, ArrowUpRight, ArrowDownRight, ListOrdered,
+  Calendar,  RefreshCw,   ListOrdered,
 } from 'lucide-react';
 import { apiFetch } from '../lib/api';
 

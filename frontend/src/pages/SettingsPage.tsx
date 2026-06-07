@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
-  Users, Settings, ShieldCheck, Mail, Loader2, CheckCircle, XCircle, Plus, Edit2, AlertCircle, Trash2, Key
+  Users, Settings, ShieldCheck, Mail, Loader2, CheckCircle, XCircle, Plus,  AlertCircle,  Key
 } from 'lucide-react';
 import { apiFetch } from '../lib/api';
 

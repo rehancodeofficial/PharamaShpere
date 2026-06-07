@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Users, Phone, Calendar, Search, Loader2, AlertCircle, FileText, ShoppingBag } from 'lucide-react';
 import { apiFetch } from '../lib/api';
 

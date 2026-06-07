@@ -1,16 +1,17 @@
 export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
   const token = localStorage.getItem('accessToken');
   
-  const headers: HeadersInit = {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...options.headers,
+    ...(options.headers as Record<string, string>),
   };
 
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const response = await fetch(`http://127.0.0.1:3000/api${endpoint}`, {
+  const baseUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:3000/api';
+  const response = await fetch(`${baseUrl}${endpoint}`, {
     ...options,
     headers,
   });
@@ -20,7 +21,7 @@ export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
     try {
       const errorData = await response.json();
       errorMessage = errorData.message || errorMessage;
-    } catch (e) {
+    } catch {
       errorMessage = response.statusText;
     }
     throw new Error(errorMessage);
