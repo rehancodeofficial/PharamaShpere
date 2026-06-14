@@ -17,11 +17,13 @@ import { PatientsModule } from './patients/patients.module';
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.DB_HOST || 'localhost',
-      port: parseInt(process.env.DB_PORT || '5432', 10),
-      username: process.env.DB_USER || 'pharma_admin',
-      password: process.env.DB_PASSWORD || 'SuperSecretPassword123!',
-      database: process.env.DB_NAME || 'pharmasphere_dev',
+      url: process.env.DATABASE_URL,
+      host: process.env.DATABASE_URL ? undefined : (process.env.DB_HOST || 'localhost'),
+      port: process.env.DATABASE_URL ? undefined : parseInt(process.env.DB_PORT || '5432', 10),
+      username: process.env.DATABASE_URL ? undefined : (process.env.DB_USER || 'pharma_admin'),
+      password: process.env.DATABASE_URL ? undefined : (process.env.DB_PASSWORD || 'SuperSecretPassword123!'),
+      database: process.env.DATABASE_URL ? undefined : (process.env.DB_NAME || 'pharmasphere_dev'),
+      ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false,
       autoLoadEntities: true,
       // Never use synchronize:true in production — always run TypeORM migrations
       synchronize: process.env.NODE_ENV !== 'production',
